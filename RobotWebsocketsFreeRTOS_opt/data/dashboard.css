@@ -1,0 +1,319 @@
+/*
+ * File: dashboard.css
+ * Description: CSS-Stylesheet für das Robot Dashboard. Definiert Grundfarben, Layout,
+ *              HUD-Boxen, Kamerastream-Container, Fadenkreuz-Elemente und Footer.
+ * Author: Dein Name
+ * Date: 2025-06-01
+ */
+
+/* === Grundlegende Body-Stile === */
+body {
+    /* Dunkler Hintergrund für Dashboard */
+    background-color: #1e1e1e;
+    /* Weiße Schriftfarbe für hohen Kontrast */
+    color: #fff;
+    /* Setze serifenlose Schriftart */
+    font-family: sans-serif;
+}
+
+/* === Hauptüberschrift (h1) === */
+h1 {
+    /* Dunkelblauer Hintergrund für h1 */
+    background-color: #0d47a1;
+    /* Weiße Schriftfarbe für h1-Text */
+    color: white;
+    /* Innenabstand von 1rem rundherum */
+    padding: 1rem;
+    /* Zentriere den Text */
+    text-align: center;
+    /* Größere Schriftgröße (1.8rem) */
+    font-size: 1.8rem;
+    /* Abstand der Buchstaben um 1px */
+    letter-spacing: 1px;
+    /* Box-Schatten nach unten für leichten 3D-Effekt */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* === Klassenausprägung für Wertefelder (z.B. .val) === */
+.val {
+    /* Leicht größere Schrift (1.1rem) für besseres Ablesen */
+    font-size: 1.1rem;
+    /* Vertikaler Innenabstand (0.2rem oben und unten) */
+    padding: 0.2rem 0;
+    /* Weiße Schriftfarbe explizit setzen */
+    color: #ffffff;
+}
+
+/* === Überschriften der Ebenen 2 und 3 (h2, h3) === */
+h2, h3 {
+    /* Hellblau (#42a5f5) für h2- und h3-Überschriften */
+    color: #42a5f5;
+}
+
+/* === Bild im Hauptbereich (.main img) === */
+.main img {
+    /* Breite 100% des Containers, Bild passt sich responsiv an */
+    width: 100%;
+    /* Höhe automatisch proportional zur Breite */
+    height: auto;
+    /* Schwarzer Hintergrund, falls Bild noch nicht geladen */
+    background-color: black;
+    /* Grauer Rahmen um das Bild (2px, solid, #666) */
+    border: 2px solid #666;
+    /* Cursor zeigt Hand an, um Klickbarkeit anzudeuten */
+    cursor: pointer;
+}
+
+/* === Scrollbarer Panel-Bereich (.scrollable-panel) === */
+.scrollable-panel {
+    /* Höhe: Viewport-Höhe minus 160px (Platz für Header/Footer) */
+    max-height: calc(100vh - 160px);
+    /* Vertikales Scrollen aktivieren, wenn Inhalt überläuft */
+    overflow-y: auto;
+}
+
+/* === Footer-Stil (.footer) === */
+.footer {
+    /* Fixiere Footer unten am Viewport */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    /* Breite 100% des Bildschirms */
+    width: 100%;
+    /* Dunkler Hintergrund für Footer */
+    background-color: #222;
+    /* Obere Rahmenlinie (1px solid #444) */
+    border-top: 1px solid #444;
+    /* Damit Footer über dem Content liegt */
+    z-index: 10;
+    /* Innenabstand von 1rem rundherum */
+    padding: 1rem;
+}
+
+/* === Container für den Kamerastream (.stream-container) === */
+.stream-container {
+    /* Position relativ, damit HUD-Boxen absolut positioniert werden können */
+    position: relative;
+    /* Schwarzer Hintergrund unterhalb des Streams */
+    background-color: black;
+    /* Breite 100% des übergeordneten Containers */
+    width: 100%;
+    /* Maximalbreite 100% (keine horizontale Überlappung) */
+    max-width: 100%;
+    /* Feste Höhe (680px) für das Video- bzw. Bild-Element */
+    height: 680px;
+    /* Flexbox, um Kind-Elemente (z.B. Bild) zentriert anzuzeigen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Überlauf ausblenden, um alles sauber zu halten */
+    overflow: hidden;
+}
+
+/* === Frame (Video-/Bild-Element innerhalb der Stream-Container) === */
+.stream-frame {
+    /* Breite und Höhe jeweils 100% des Containers */
+    width: 100%;
+    height: 100%;
+    /* Bild füllen, Verzerrung zulässig (fill) */
+    object-fit: fill;
+}
+
+/* === HUD-Boxen (.hud-box) === */
+.hud-box {
+    /* Absolute Positionierung innerhalb des .stream-container */
+    position: absolute;
+    /* Hintergrundfarbe: leicht grauer Ton mit 25.6% Opazität */
+    background: rgba(125, 123, 123, 0.256);
+    /* Schriftfarbe lime (hellgrün) */
+    color: lime;
+    /* Etwas größere Schriftgröße (20px) */
+    font-size: 20px;
+    /* Innenabstand für Tabellen-Content (8px vertikal, 12px horizontal) */
+    padding: 8px 12px;
+    /* Abgerundete Ecken (8px Radius) */
+    border-radius: 8px;
+}
+
+/* === Tabellen innerhalb von .hud-box (Tabellen-Gestaltung) === */
+.hud-box table {
+    /* Border-Collapse: Zellenränder zusammenführen */
+    border-collapse: collapse;
+}
+
+/* === Tabellenzellen innerhalb von .hud-box-Tabellen === */
+.hud-box td {
+    /* Innenabstand (2px vertikal, 8px horizontal) */
+    padding: 2px 8px;
+}
+
+/* === Neues, festes Fadenkreuz (.fixed-cross) === */
+.fixed-cross {
+    /* Absolute Positionierung in der Mitte des Containers */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Feste Größe des Fadenkreuzes (100px x 100px) */
+    width: 100px;
+    height: 100px;
+    /* Verschiebe es exakt in die Mitte (translate(-50%, -50%)) */
+    transform: translate(-50%, -50%);
+    /* Keine Mausereignisse durchlassen, damit Klicks ans Video gehen */
+    pointer-events: none;
+    /* Z-Index von 2: unter .dot (z-index:4), über dem Video (default 0) */
+    z-index: 2;
+}
+
+/* === Horizontale Linie des festen Fadenkreuzes (.fixed-cross .line-h) === */
+.fixed-cross .line-h {
+    /* Absolute Positionierung innerhalb von .fixed-cross */
+    position: absolute;
+    /* Vertikal zentrieren (top:50%, transform y -50%) */
+    top: 50%;
+    left: 0;
+    /* Breite 100% von .fixed-cross */
+    width: 100%;
+    /* Höhe 2px für eine dünne Linie */
+    height: 2px;
+    /* Grün (#00FF00) für sichtbare Kontrastlinie */
+    background-color: green;
+    /* Genau vertikal zentriert */
+    transform: translateY(-50%);
+}
+
+/* === Vertikale Linie des festen Fadenkreuzes (.fixed-cross .line-v) === */
+.fixed-cross .line-v {
+    /* Absolute Positionierung innerhalb von .fixed-cross */
+    position: absolute;
+    /* Von oben 0, d.h. Linie beginnt am oberen Rand von .fixed-cross */
+    top: 0;
+    left: 50%;
+    /* Breite 2px für eine dünne Linie */
+    width: 2px;
+    /* Höhe 100% von .fixed-cross */
+    height: 100%;
+    /* Grün (#00FF00) */
+    background-color: green;
+    /* Horizontal zentrieren (translateX(-50%)) */
+    transform: translateX(-50%);
+}
+
+/* === Roter Punkt in der Mitte (.dot) === */
+.dot {
+    /* Absolute Positionierung in der Mitte des Containers */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Feste Größe von 6px × 6px */
+    width: 6px;
+    height: 6px;
+    /* Rote Hintergrundfarbe */
+    background-color: red;
+    /* Kreisform durch 50% Border-Radius */
+    border-radius: 50%;
+    /* In die Mitte verschieben */
+    transform: translate(-50%, -50%);
+    /* Z-Index 4, um über allen anderen Fadenkreuz-Elementen zu liegen */
+    z-index: 4;
+}
+
+/* === Fadenkreuz-Container (.crosshair) === */
+.crosshair {
+    /* Absolute Positionierung in der Mitte des Containers */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Feste Größe von 200px × 200px */
+    width: 200px;
+    height: 200px;
+    /* Verschiebe exakt in die Mitte (translate(-50%, -50%)) */
+    transform: translate(-50%, -50%);
+    /* Keine Mausereignisse durchlassen */
+    pointer-events: none;
+}
+
+/* === Generische Linien (.line) innerhalb von .crosshair === */
+.line {
+    /* Absolute Positionierung relativ zu .crosshair */
+    position: absolute;
+    /* Farbe lime (hellgrün) */
+    background-color: lime;
+}
+
+/* === Horizontale Linie des dynamischen Fadenkreuzes (.horizontal) === */
+.horizontal {
+    /* Von oben 50%, also vertikal zentriert */
+    top: 50%;
+    left: 0;
+    /* Breite 100% von .crosshair (200px) */
+    width: 100%;
+    /* Höhe 4px für gut sichtbare Linie */
+    height: 4px;
+    /* Transform translateY(-50%) für exakte Zentrierung */
+    transform: translateY(-50%);
+    /* Wenn Animation gewünscht, könnte hier transition eingefügt werden:
+     * transition: top 0.01s ease-in-out;
+     */
+}
+
+/* === Vertikale Linie des dynamischen Fadenkreuzes (.vertical) === */
+.vertical {
+    /* Von oben 0, also beginnt am oberen Rand von .crosshair */
+    top: 0;
+    left: 50%;
+    /* Breite 4px, um gut sichtbar zu sein */
+    width: 4px;
+    /* Höhe 100% von .crosshair (200px) */
+    height: 100%;
+    /* Transformationsursprung in der Mitte (für Rotation um die Mitte) */
+    transform-origin: center;
+    /* Initial keine Rotation, TranslateX(-50%) für exakte zentrale Position */
+    transform: translateX(-50%) rotate(0deg);
+    /* Wenn Animation gewünscht, könnte hier transition eingefügt werden:
+     * transition: left 0.01s ease-in-out, transform 0.01s ease-in-out;
+     */
+}
+
+/* === Positionierung der HUD-Boxen anhand ihrer IDs === */
+
+/* Orientierung (oben links) */
+#orientation {
+    top: 10px;
+    left: 10px;
+}
+
+/* Entfernung (oben rechts) */
+#distance {
+    top: 10px;
+    right: 10px;
+}
+
+/* Drive (unten links, oberhalb Footer-Höhe) */
+#drive {
+    bottom: 90px;
+    left: 10px;
+}
+
+/* Servo (unten rechts, oberhalb Footer-Höhe) */
+#servo {
+    bottom: 90px;
+    right: 10px;
+}
+
+/* System (unten mittig, oberhalb Footer) */
+#system {
+    bottom: 10px;
+    left: 50%;
+    /* In Richtung der Mitte verschieben (translateX(-50%)) */
+    transform: translateX(-50%);
+}
+
+/* Datum/Uhrzeit (oben mittig) */
+#datetime {
+    top: 10px;
+    left: 50%;
+    /* In Richtung der Mitte verschieben */
+    transform: translateX(-50%);
+    /* Z-Index 5, damit es über festen HUD-Boxen liegt */
+    z-index: 5;
+}

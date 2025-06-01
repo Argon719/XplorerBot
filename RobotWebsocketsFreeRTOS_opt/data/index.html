@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+  File: dashboard.html
+  Description: Robot Dashboard mit Live-Datenanzeige (IMU, Ultraschall, TOF, Batterie, Netzwerk),
+               Kamerastream, Telemetriedaten und Steuerungselementen. Verwendet Bootstrap 5 für Layout
+               und Styling, Bootstrap Icons für Symbole sowie externe Stylesheet- und JavaScript-Dateien.
+  Author: Dein Name
+  Date: 2025-06-01
+-->
+
+<head>
+  <!-- Zeichensatz für korrekte Anzeige von Umlauten und Sonderzeichen -->
+  <meta charset="UTF-8" />
+  <!-- Seitentitel im Browser-Tab -->
+  <title>Robot Dashboard</title>
+  <!-- Bootstrap 5 CSS von CDN für responsives Layout und vorgefertigte Komponenten -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons von CDN für Icons (z.B. Thermometer, Kamera, Joystick) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Eigenes Stylesheet für weitere individuelle Anpassungen -->
+  <link href="dashboard.css" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- Hauptüberschrift der Seite -->
+  <h1>Robot Dashboard</h1>
+
+  <!-- Container für das gesamte Dashboard, nutzt Bootstrap-Grid -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- =======================
+           Linkes Panel: Sensoren
+           ======================= -->
+      <div class="col-md-2">
+        <!-- Karte mit dunklem Hintergrund und weißem Text, scrollbar, falls Inhalt zu groß -->
+        <div class="card bg-dark text-white mb-3 scrollable-panel">
+          <div class="card-body">
+            <!-- Karte-Titel mit Icons für Umgebungs-Sensoren -->
+            <h2 class="card-title"><i class="bi bi-thermometer-sun"></i>
+              Environmental Sensors</h2>
+
+            <!-- IMU-Sensor-Karte -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <!-- Überschrift mit Icon -->
+              <h3><i class="bi bi-browser-safari"></i> IMU-Sensor</h3>
+              <!-- Platzhalter für Yaw, Pitch, Roll (werden per JS befüllt) -->
+              <div class="val">Yaw: <span id="yaw">–</span>°</div>
+              <div class="val">Pitch: <span id="pitch">–</span>°</div>
+              <div class="val">Roll: <span id="roll">–</span>°</div>
+            </div>
+
+            <!-- Ultraschall-Reichweite-Karte -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-broadcast-pin"></i> Ultrasonic Range</h3>
+              <!-- Rohwert und gefilterter Wert -->
+              <div class="val">Raw: <span id="usRaw">–</span> cm</div>
+              <div class="val">Filt: <span id="usFilt">–</span> cm</div>
+            </div>
+
+            <!-- Front-Laser-Distanz-Karte (Time-of-Flight) -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-rulers"></i> Front Laser Distance</h3>
+              <!-- Distanz in mm -->
+              <div class="val">Dist: <span id="tof">–</span> mm</div>
+            </div>
+
+            <!-- Batterie-Karte -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-battery-half"></i> Battery</h3>
+              <!-- Batteriewert in mV -->
+              <div class="val">Battery: <span id="battery">–</span> mV</div>
+            </div>
+
+            <!-- Netzwerk-Karte -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-wifi"></i> Network</h3>
+              <!-- WLAN-Signalstärke in dBm -->
+              <div class="val">RSSI: <span id="rssi">–</span> dBm</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================
+           Zentrales Panel: Kamera
+           ====================== -->
+      <div class="col-md-8 text-center py-3">
+        <!-- Überschrift für Kamera-Bereich -->
+        <h2 class="text-primary"><i class="bi bi-camera-video"></i> Camera</h2>
+        <!-- Container für Kamera-Stream und HUD-Overlay -->
+        <div class="stream-container">
+          <!-- Standardbild, falls Kamera offline (ersetzt per JS durch MJPEG-Stream) -->
+          <img id="stream" src="camera_offline.jpg" alt="Camera Feed" class="img-fluid stream-frame" />
+
+          <!-- Fadenkreuz (crosshair) als CSS-Overlay (z.B. feste Mitte) -->
+          <div class="crosshair">
+            <div class="line horizontal"></div>
+            <div class="line vertical"></div>
+          </div>
+
+          <!-- Fixierte Fadenkreuze (zwei Linienkreuz für Zielvisier) -->
+          <div class="fixed-cross">
+            <div class="line-h"></div>
+            <div class="line-v"></div>
+          </div>
+
+          <!-- Mittelpunkt-Markierung -->
+          <div class="dot"></div>
+
+          <!-- HUD-Box: Orientierung (IMU-Werte) -->
+          <div class="hud-box" id="orientation">
+            <table></table> <!-- Tabellenplatzhalter, wird per JS befüllt -->
+          </div>
+          <!-- HUD-Box: Entfernung (Ultraschall/TOF) -->
+          <div class="hud-box" id="distance">
+            <table></table>
+          </div>
+          <!-- HUD-Box: Fahrdaten (Drive-Mode, Throttle, Turn, Speed) -->
+          <div class="hud-box" id="drive">
+            <table></table>
+          </div>
+          <!-- HUD-Box: Servo-Positionen (KameraTower) -->
+          <div class="hud-box" id="servo">
+            <table></table>
+          </div>
+          <!-- HUD-Box: Systeminformationen (z.B. LED, FPV) -->
+          <div class="hud-box" id="system">
+            <table></table>
+          </div>
+          <!-- HUD-Box: Datum und Uhrzeit -->
+          <div class="hud-box" id="datetime">
+            <table></table>
+          </div>
+        </div>
+
+        <!-- IP-Adresse der IP-Kamera -->
+        <div class="val text-white">IP-Camera → <span id="camIP">–</span></div>
+        <!-- Verbindungsstatus (z.B. "Connected", "Initializing…") -->
+        <div class="val text-white">
+          Status → <span id="statusText">Initializing…</span>
+        </div>
+        <!-- Anzeige von Qualitätsstufe und Datum/Uhrzeit -->
+        <div class="val text-white d-flex justify-content-center gap-4">
+          <span>Quality → <span id="camQualityDisplay">–</span></span>
+          <span>Date/Time → <span id="dateTimeDisplay">–</span></span>
+        </div>
+      </div>
+
+      <!-- ========================
+           Rechtes Panel: Bewegung & Ausgabe
+           ======================== -->
+      <div class="col-md-2">
+        <!-- Karte mit dunklem Hintergrund und weißem Text, scrollbar -->
+        <div class="card bg-dark text-white mb-3 scrollable-panel">
+          <div class="card-body">
+            <!-- Titel mit Icon -->
+            <h2 class="card-title"><i class="bi bi-gear"></i> Movement & Output</h2>
+
+            <!-- Drive-Karte -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-joystick"></i> Drive</h3>
+              <!-- Fahrmodus (SWC), Throttle, Turn, Geschwindigkeiten der Räder, Headlight (LED) -->
+              <div class="val">Drive Mode: <span id="swc">–</span></div>
+              <div class="val">Throttle: <span id="thr">–</span></div>
+              <div class="val">Turn: <span id="turn">–</span></div>
+              <div class="val">Speed R: <span id="speed1">–</span></div>
+              <div class="val">Speed L: <span id="speed3">–</span></div>
+              <div class="val">Headlight: <span id="led">–</span>%</div>
+            </div>
+
+            <!-- Encoders-Karte -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-gear-wide"></i> Encoders</h3>
+              <!-- Encoder-Werte rechts/links, Umdrehungen rechts/links, Distanz mm rechts/links -->
+              <div class="val">Enc R: <span id="enc1">–</span></div>
+              <div class="val">Enc L: <span id="enc3">–</span></div>
+              <div class="val">Rev R: <span id="rev1">–</span></div>
+              <div class="val">Rev L: <span id="rev3">–</span></div>
+              <div class="val">Dist R: <span id="dist1">–</span> mm</div>
+              <div class="val">Dist L: <span id="dist3">–</span> mm</div>
+            </div>
+
+            <!-- Kameraturm-Karte (Servo-Positionen & LED) -->
+            <div class="card bg-secondary bg-opacity-25 mb-3 p-2">
+              <h3><i class="bi bi-webcam-fill"></i> Camera Tower</h3>
+              <!-- Neigungs- und Schwenkwinkel (in °), Kameraled-Status, FPV-Kamera-Ein/Aus (SWD) -->
+              <div class="val">Tilt: <span id="servo0">–</span>°</div>
+              <div class="val">Pan: <span id="servo1">–</span>°</div>
+              <div class="val">LED: <span id="cameraled">–</span></div>
+              <div class="val">FPV Camera: <span id="swd">–</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================
+       Footer: Steuerungselemente
+       ====================== -->
+  <footer class="footer d-flex justify-content-between align-items-center">
+    <!-- Schaltelement: LED-Toggle -->
+    <div class="d-flex align-items-center gap-2">
+      <label for="ledToggle" class="me-2">LED:</label>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="ledToggle" />
+      </div>
+    </div>
+
+    <!-- Buttons für IMU-Reset, Qualitätsänderung, Encoder-Reset -->
+    <button class="btn btn-secondary mx-1" id="btnResetIMU">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset IMU
+    </button>
+
+    <button class="btn btn-secondary mx-1" id="btnHigh">HIGH</button>
+    <button class="btn btn-secondary mx-1" id="btnMid">MEDIUM</button>
+    <button class="btn btn-secondary mx-1" id="btnLow">LOW</button>
+
+    <button class="btn btn-secondary mx-1" id="btnResetEnc">
+      <i class="bi bi-arrow-clockwise"></i> Reset Encoders
+    </button>
+
+    <!-- Dropdown für Zusatzaktionen (Reset Robot, Reset Camera) -->
+    <div class="d-flex align-items-center gap-2">
+      <select id="actionSelect" class="form-select form-select-sm">
+        <option disabled selected>Select Action</option>
+        <option value="reset_robot">Reset Robot</option>
+        <option value="reset_camera">Reset Camera</option>
+      </select>
+      <button class="btn btn-primary" id="btnActionSend">Go</button>
+
+      <!-- Slider zur Anpassung der HUD-Hintergrundleuchtstärke (CSS-Effekt) -->
+      <label for="lightSlider" class="text-white ms-3">HUD-BG:</label>
+      <input type="range" id="lightSlider" min="0" max="100" step="1" value="50" class="form-range w-auto"
+        style="width: 120px;" />
+    </div>
+  </footer>
+
+  <!-- Eigenes JavaScript für Dashboard-Funktionalität (WebSocket, Fetch, DOM-Updates) -->
+  <script src="dashboard.js"></script>
+  <!-- Bootstrap 5 JS-Bundle (inkl. Popper) von CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+</body>
+
+</html>

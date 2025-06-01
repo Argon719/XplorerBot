@@ -1,0 +1,2 @@
+XplorerTCA9548A	KEYWORD1
+selectI2CMuxChannel	KEYWORD2
